@@ -1,52 +1,55 @@
-const int trigPin = 7;
-const int echoPin = 6;
-const int buzzerPin = 3;
-const int btnPin = 1;
-const int LED_RED = 5;
+// -- CONSTANTES -- //
 
-long duration;
-int distance;
+// Pinos dos componentes
+const int BTN_PIN = 1;
+const int BUZZER_PIN = 3;
+const int LED_PIN = 5;
+const int ECHO_PIN = 6;
+const int TRIG_PIN = 7;
 
+// Valores
+const int INTRUD_TONE = 1000;
+
+// -- FUNCOES --
 void setup() {
-  pinMode(LED_RED, OUTPUT);
-  pinMode(trigPin, OUTPUT);
-  pinMode(echoPin, INPUT);
-  pinMode(buzzerPin, OUTPUT);
-  pinMode(btnPin, INPUT);
+  pinMode(BTN_PIN, INPUT);
+  pinMode(BUZZER_PIN, OUTPUT);
+  pinMode(LED_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+  pinMode(TRIG_PIN, OUTPUT); 
 }
 
-void tocaAlarme() {
+// Pisca o led e o som do alarme ate que o botao seja pressionado
+void tocaAlarme(int freq) {
   do {
-    digitalWrite(LED_RED, HIGH);
-    tone(buzzerPin, 1000); 
-    delay(100);            // Som por 100ms
-  
-    digitalWrite(LED_RED, LOW);
-    noTone(buzzerPin);      // Silêncio por 100ms (cria o efeito de intermitência)
-    delay(100);  
-  } while (!digitalRead(btnPin));     
+    digitalWrite(LED_PIN, HIGH);
+    tone(BUZZER_PIN, freq);
+    delay(100);
+    
+    digitalWrite(LED_PIN, LOW);
+    noTone(BUZZER_PIN);
+    delay(100);
+  } while (!digitalRead(BTN_PIN));
 }
 
+// Loop (funcao principal)
 void loop() {
-  // Disparo do sensor ultrassônico
-  digitalWrite(trigPin, LOW);
+  // Disparo do sensor ultrassonico
+  digitalWrite(TRIG_PIN, LOW);
   delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH);
+  digitalWrite(TRIG_PIN, HIGH);
   delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
+  digitalWrite(TRIG_PIN, LOW);
   
-  duration = pulseIn(echoPin, HIGH);
-  distance = duration * 0.034 / 2;
+  // Com base na duracao, calcula a distancia do objeto
+  long duration = pulseIn(ECHO_PIN, HIGH);
+  int distance = duration * 0.034 / 2;
   
-  // Se a distância for menor que 30cm (e maior que 0 para evitar erros)
+  // Se distancia < 30cm e > 0 (evitar erros)
   if (distance < 30 && distance > 0) {
-    tocaAlarme();
-  } else {
-    // Se estiver longe, desliga tudo
-    digitalWrite(LED_RED, LOW);
-    noTone(buzzerPin);
+    tocaAlarme(INTRUD_TONE);
   }
   
-  // Pequena pausa para estabilizar o sensor no próximo ciclo
-  delay(50); 
+  // Delay no loop para evitar bugs no sensor e evitar disparar novamente
+  delay(2000);
 }
