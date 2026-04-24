@@ -2,10 +2,10 @@
 
 // Pinos dos componentes
 const int BTN_PIN = 1;
-const int BUZZER_PIN = 3;
-const int LED_PIN = 5;
-const int ECHO_PIN = 6;
-const int TRIG_PIN = 7;
+const int BUZZER_PIN = 2;
+const int LED_PIN = 3;
+const int TRIG_PIN = 4;
+const int ECHO_PIN = 5;
 
 // Valores
 const int INTRUD_TONE = 1000;
@@ -29,7 +29,10 @@ void tocaAlarme(int freq) {
     digitalWrite(LED_PIN, LOW);
     noTone(BUZZER_PIN);
     delay(100);
-  } while (!digitalRead(BTN_PIN));
+  } while (digitalRead(BTN_PIN));
+
+  // Delay no loop para evitar bugs no sensor e evitar disparar novamente
+  delay(2000);
 }
 
 // Loop (funcao principal)
@@ -49,7 +52,4 @@ void loop() {
   if (distance < 30 && distance > 0) {
     tocaAlarme(INTRUD_TONE);
   }
-  
-  // Delay no loop para evitar bugs no sensor e evitar disparar novamente
-  delay(2000);
 }
